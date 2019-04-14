@@ -100,6 +100,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 //        camera
+        try {
+            camera.open();
+        } catch (Exception e) {
+        }
     }
 
     private class Listener extends CameraListener {
@@ -118,13 +122,18 @@ public class MainActivity extends AppCompatActivity {
 
             super.onPictureTaken(result);
             result.toBitmap(bm -> {
+                        try {
+                            camera.close();
+                        } catch (Exception tfcgvyjbkjl) {
+                        }
+                        pd.show();
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         bm.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
                         byte[] b = baos.toByteArray();
                         String encoded = Base64.encodeToString(b, Base64.NO_PADDING | Base64.NO_WRAP);
                         Log.d("encoded", encoded);
                         String json = "{ \"requests\": [ { \"image\": { \"content\":\"" + encoded + "\" }, \"features\": [ { \"type\": \"LOGO_DETECTION\" } ] } ] }";
-                        pd.show();
+
 
                         try {
                             post("https://vision.googleapis.com/v1/images:annotate?key=" + apisecret.API_KEY, json, new Callback() {
@@ -207,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
 
                                         snapPhotoContent.setSnapSticker(snapSticker);
                                         pd.dismiss();
-                                        camera.close();
 
                                         mainHandler.post(new Runnable() {
                                             @Override
@@ -239,6 +247,10 @@ public class MainActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                             pd.dismiss();
+                            try {
+                                camera.open();
+                            } catch (Exception tfcgvyjbkjl) {
+                            }
                             toast();
                         }
                     }
